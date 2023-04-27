@@ -5,7 +5,7 @@ public class Main {
         JFrame jFrame = new JFrame();
 
         JButton jButton1 = new JButton("Click me.");
-        jButton1.setBounds(120, 100, 100, 40);
+        jButton1.setBounds(250, 250, 100, 40);
 
         jFrame.add(jButton1);
         jFrame.setSize(500, 500);
