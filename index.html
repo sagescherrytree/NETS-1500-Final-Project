@@ -1,19 +1,23 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Joyce's Final Portfolio</title>
-    <link rel="stylesheet" href="css/index.css">
+    <title>The Art of Music</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost:200,300,400,500,600">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js"></script>
     <script src="./main.js"></script>
   </head>
   <body>
-    <div id="headline">
-        <h1>hi there</h1>  
-    <h2>keep scrolling</h2>
-    </div>
+    <div class="search-wrapper">
+      <h1>Search for an Artist</h1>
+      <form id="search-form">
+          <input type="search" id="query" value="" placeholder="Katy Perry" />
+          <input type="submit" id="search-button" value="Generate art" />
+      </form>
+      <div id="results"></div>
+  </div>
   </body>
 </html>
