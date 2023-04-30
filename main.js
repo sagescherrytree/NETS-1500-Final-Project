@@ -1,3 +1,11 @@
+const searchInput = document.getElementById("query")
+
+searchInput.addEventListener("input", e => {
+  const artist = e.target.value;
+  e.preventDefault();
+  console.log(artist);
+})
+
 var img;
 let minYchange = 0; //these two ranges determine line overlap and width
 let maxYchange = 50;

@@ -25,27 +25,31 @@ h1 {
 }
 
 #search-form {
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 #query {
-    height: 25px;
-    padding: 5px;
-    border-radius: 5px;
+    height: 30px;
+    width: 300px;
+    padding: 5px 10px;
+    border-radius: 5px 0 0 5px;
     border: none;
+
 }
 
 #query:focus {
-    border: #1DB954 solid 1px;
+    outline: none !important;
+    border: #1DB954 solid 2px;
 }
 
 #search-button {
-    height: 25px;
+    height: 30px;
     width: 90px;
     border: none;
     background-color: #1DB954;
-    border-radius: 5px;
+    border-radius: 0 5px 5px 0;
     font-weight: 500;
+    margin-left: -5px;
 }
 
 #search-button:hover {
