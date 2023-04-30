@@ -1,10 +1,45 @@
-const searchInput = document.getElementById("query")
+const clientId = "3b96d98dc3b545cbbbe2a9420ff4f6c9";
+const clientSecret = "568b521ce3f949b7ac4236ad7ff49d5c";
+const searchInput = document.getElementById("search-form");
 
-searchInput.addEventListener("input", e => {
-  const artist = e.target.value;
+searchInput.addEventListener("submit", e => {
+  const input = e.target.value;
   e.preventDefault();
-  console.log(artist);
-})
+  console.log(input);
+});
+
+
+async function getAccessToken() {
+
+  const result = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+        'Content-Type' : 'application/x-www-form-urlencoded', 
+    },
+    body: 'grant_type=client_credentials&client_id=' + clientId + '&client_secret=' + clientSecret
+  });
+
+  const data = await result.json();
+  console.log(data.access_token);
+  return data.access_token;
+};
+
+async function getTrackId(trackName) {
+  const token = await getAccessToken();  
+  const result = await fetch(`https://api.spotify.com/v1/search?q=${trackName}&type=track&limit=1&offset=0`, {
+  method: 'GET',
+  headers: { 
+    'Content-Type' : "application/json",
+    'Authorization' : `Bearer ${token}`
+  }
+});
+
+  const trackId = await result.json().id;
+  return trackId;
+};
+
+const id = getTrackId("LOSER");
+
 
 var img;
 let minYchange = 0; //these two ranges determine line overlap and width
