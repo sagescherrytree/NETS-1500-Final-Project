@@ -1,3 +1,4 @@
+
 const clientId = "3b96d98dc3b545cbbbe2a9420ff4f6c9";
 const clientSecret = "568b521ce3f949b7ac4236ad7ff49d5c";
 const searchInput = document.getElementById("search-form");
@@ -52,7 +53,7 @@ let alph = 255; //out of 255
 let colRand = false; //true = random color; false = color from palette table
 let filling = true;
 let colorLines = false; //false for black lines
-let sw = 3; //line width
+let sw = 1; //line width
 let extraBlack = 0; //1 for some black line and white fills; 0 for neither; -2 for fewer colors;
 let extraBlackAlph = 255; //out of 255 - used if extraBlack=1 & lines, filling, colorLines all true, low alph, high sw
 let r, g, b;
@@ -63,8 +64,8 @@ function preload() {
   }
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
-    let canv = createCanvas(windowWidth-20, windowHeight-20);
+    createCanvas(windowWidth, windowHeight, WEBGL);
+    let canv = createCanvas(windowWidth-30, windowHeight-30);
   canv.mousePressed(setup);
   if (lines == true) {
     stroke(0, 0, 0, extraBlackAlph);
@@ -73,7 +74,7 @@ function setup() {
     noStroke();
   }
   angleMode(DEGREES);
-  let end = height / 2 + 500; //where lines stop
+  let end = height / 2 + 400; //where lines stop
   let palette = floor(random(676));
   for (let i = 0; i < layers; i++) {
     let y1;
@@ -141,14 +142,15 @@ function setup() {
       endShape(CLOSE);
       pop();
     }
+    colorMode(HSB,359,100,100,100);
   }
     // Image(img, 0, 0, windowWidth, windowHeight);
     // img.hide();
     // background(100);
 }
   
-  function draw() {
-    // Generative art ideas
+function draw() {
+  // Generative art ideas
     // Use colours from album covers and randomise transfomrmations?
     // Use different post processing shaders on them?
     // Maybe customisable transformations?
@@ -164,5 +166,5 @@ function setup() {
     // for (let i = 0; i < 10; i++) {
     //     arc(50 + i * 2, 55 + i * 5, 70 + 10 * i, 70, PI, PI + HALF_PI);
     //     arc(50 + i * 2, 250 + i * 5, 200 + 10 * i, 200, PI, TWO_PI);
-    // }
+    // } 
 }
