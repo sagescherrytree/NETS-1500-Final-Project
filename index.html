@@ -10,14 +10,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js"></script>
   </head>
   <body>
-    <div class="search-wrapper">
-      <h1>Search for a Song</h1>
-      <form id="search-form">
-          <input type="search" id="query" value="" placeholder="The Star-Spangled Banner" />
-          <input type="submit" id="search-button" value="Generate art" />
-      </form>
-      <div id="results"></div>
-  </div>
+    <div class="container">
+      <div class="search-wrapper">
+        <h1>Let's make some magic</h1>
+        <form id="search-form">
+          <label for="song-query">Song</label>
+          <input type="search" name="song-query" id="track" class="query" value="" placeholder="Hey There Delilah" required/>
+          <label for="artist-query">Artist (Optional)</label>
+          <input type="search" name="artist-query" id="artist" class="query" value="" placeholder="Plain White T's" />
+          <input type="submit" class="search-button" value="Generate art" />
+          </div>
+        </form>
+        <div id="generated-art"></div>
+      </div>
+    </div>
   </body>
   <script src="particles.js"></script>
   <script src="main.js"></script>
