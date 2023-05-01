@@ -61,9 +61,11 @@ let table;
 
 // Create shader
 let worleyNoise;
+let shaderTest;
 
 function preload() {
   worleyNoise = loadShader('worley.vert', 'worley.frag');
+  shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
   // table = loadTable("colours.csv", "csv", "header");
   img = loadImage("experiments/Experiment_1.png");
 }
@@ -74,6 +76,7 @@ function setup() {
   noStroke();
 
   image(img, -270, -300, windowWidth, windowHeight);
+  
   //   let canv = createCanvas(windowWidth-30, windowHeight-30);
   // canv.mousePressed(setup);
   // if (lines == true) {
@@ -159,12 +162,19 @@ function setup() {
 }
   
 function draw() {
-  shader(worleyNoise);
+  // shader(worleyNoise);
 
-  worleyNoise.setUniform("u_Texture", img);
-  worleyNoise.setUniform("u_Time", millis() / 1000.0);
-  worleyNoise.setUniform("u_Dimensions", [windowWidth, windowHeight]);
-  rect(0,0,width,height);
+  shaderTest.setUniform("iResolution", [width, height]);
+  shaderTest.setUniform("iFrame", frameCount);
+  shaderTest.setUniform("iMouse", [mouseX, map(mouseY, 0, height, height, 0)]);
+
+  shader(shaderTest);
+  // Worley noise section
+  // worleyNoise.setUniform("u_Texture", img);
+  // worleyNoise.setUniform("u_Time", millis() / 1000.0);
+  // worleyNoise.setUniform("u_Dimensions", [windowWidth, windowHeight]);
+
+  rect(0,0,windowWidth,windowHeight);
   // Generative art ideas
     // Use colours from album covers and randomise transfomrmations?
     // Use different post processing shaders on them?
@@ -182,4 +192,8 @@ function draw() {
     //     arc(50 + i * 2, 55 + i * 5, 70 + 10 * i, 70, PI, PI + HALF_PI);
     //     arc(50 + i * 2, 250 + i * 5, 200 + 10 * i, 200, PI, TWO_PI);
     // } 
+}
+
+function windowResized(){
+  resizeCanvas(windowWidth, windowHeight);
 }
