@@ -50,16 +50,29 @@ let shaderTest;
 let sinewave;
 let greyscale;
 
+let blurH;
+let blurV;
+let bloom;
+
 let layer1;
 let layer2;
+
+let pass1;
+let pass2;
+let bloomPass;
 
 // let shaderLayer;
 
 function preload() {
   worleyNoise = loadShader('worley.vert', 'worley.frag');
   shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
-  sinewave = loadShader('sinewave.vert', 'sinewave.frag');
-  greyscale = loadShader('greyscale.vert', 'greyscale.frag');
+  sinewave = loadShader('base.vert', 'sinewave.frag');
+  greyscale = loadShader('base.vert', 'greyscale.frag');
+
+  blurH = loadShader('base.vert', 'blur.frag');
+  blurV = loadShader('base.vert', 'blur.frag');
+  bloom = loadShader('base.vert', 'bloom.frag');
+
   // table = loadTable("colours.csv", "csv", "header");
   img = loadImage("experiments/Experiment_1.png");
 }
@@ -74,6 +87,13 @@ function setup() {
   layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
   layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
 
+  pass1 = createGraphics(windowWidth, windowHeight, WEBGL);
+  pass2 = createGraphics(windowWidth, windowHeight, WEBGL);
+  bloomPass = createGraphics(windowWidth, windowHeight, WEBGL);
+
+  pass1.noStroke();
+  pass2.noStroke();
+  bloomPass.noStroke();
 }
   
 function draw() {
@@ -95,10 +115,34 @@ function draw() {
   sinewave.setUniform("frequency", freq);
   sinewave.setUniform("amplitude", amp);
 
-  // rect gives us some geometry on the screen
   layer2.rect(0,0,windowWidth, windowHeight);
 
-  image(layer2, -270, -300);
+  pass1.shader(blurH);
+
+  blurH.setUniform('tex0', layer2);
+  blurH.setUniform('texelSize', [1.0/windowWidth, 1.0/windowHeight]);
+  blurH.setUniform('direction', [1.0, 0.0]);
+
+  pass1.rect(0,0,windowWidth, windowHeight);
+
+  pass2.shader(blurV);
+
+  blurV.setUniform('tex0', pass1);
+  blurV.setUniform('texelSize', [1.0/width, 1.0/height]);
+  blurV.setUniform('direction', [0.0, 1.0]);
+
+  pass2.rect(0,0,windowWidth, windowHeight);
+
+  bloomPass.shader(bloom);
+
+  bloom.setUniform('tex0', layer2);
+  bloom.setUniform('tex1', pass2);
+
+  bloom.setUniform('mouseX', mouseX/windowWidth);
+
+  bloomPass.rect(0,0,windowWidth, windowHeight);
+
+  image(bloomPass, -240, -300);
 
   shaderTest.setUniform("iResolution", [width, height]);
   shaderTest.setUniform("iFrame", frameCount);
