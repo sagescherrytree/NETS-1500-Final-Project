@@ -48,6 +48,10 @@ let img;
 let worleyNoise;
 let shaderTest;
 let sinewave;
+let greyscale;
+
+let layer1;
+let layer2;
 
 // let shaderLayer;
 
@@ -55,6 +59,7 @@ function preload() {
   worleyNoise = loadShader('worley.vert', 'worley.frag');
   shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
   sinewave = loadShader('sinewave.vert', 'sinewave.frag');
+  greyscale = loadShader('greyscale.vert', 'greyscale.frag');
   // table = loadTable("colours.csv", "csv", "header");
   img = loadImage("experiments/Experiment_1.png");
 }
@@ -66,16 +71,22 @@ function setup() {
 
   image(img, -270, -300, windowWidth, windowHeight);
 
-  // shaderLayer = createGraphics(windowWidth, windowHeight, WEBGL);
-  // shaderLayer.noStroke();
+  layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
+  layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
 
 }
   
 function draw() {
-  // Test sinewave
-  shader(sinewave);
+  // Test greyscale
+  layer1.shader(greyscale);
 
-  sinewave.setUniform("tex0", img);
+  greyscale.setUniform("tex0", img);
+  layer1.rect(0,0,windowWidth, windowHeight);
+
+  // Test sinewave
+  layer2.shader(sinewave);
+
+  sinewave.setUniform("tex0", layer1);
   sinewave.setUniform("time", frameCount * 0.01);
 
   let freq = map(mouseX, 0, width, 0, 10.0);
@@ -85,7 +96,9 @@ function draw() {
   sinewave.setUniform("amplitude", amp);
 
   // rect gives us some geometry on the screen
-  rect(0,0,windowWidth, windowHeight);
+  layer2.rect(0,0,windowWidth, windowHeight);
+
+  image(layer2, -270, -300);
 
   shaderTest.setUniform("iResolution", [width, height]);
   shaderTest.setUniform("iFrame", frameCount);
@@ -95,11 +108,12 @@ function draw() {
   // rect(0, 0, windowWidth, windowHeight);
 
   // Worley noise section
+
+  shader(worleyNoise);
+
   worleyNoise.setUniform("iResolution", [width, height]);
   worleyNoise.setUniform("u_Time", frameCount);
   worleyNoise.setUniform("u_Texture", img);
-  
-  // shader(worleyNoise);
 
   // rect(0, 0, windowWidth, windowHeight);
 
