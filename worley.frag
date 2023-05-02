@@ -1,51 +1,54 @@
 #ifdef GL_ES
-    precision mediump float;
+precision mediump float;
 #endif
 
-uniform vec2 u_Dimensions;
-uniform float u_Time;
+uniform vec2 iResolution;
+uniform int u_Time;
 
-out vec3 color;
+varying vec2 vTexCoord;
+uniform sampler2D u_RenderedTexture;
 
-#define NOISE_FREQUENCY 4.0
-#define FBM_OCTAVES 6
+// Determines how many cells there are
+#define NUM_CELLS 16.0
 
+// ShaderToy Worley Noise
+// Arbitrary random, can be replaced with a function of your choice
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+// Returns the point in a given cell
+vec2 get_cell_point(ivec2 cell) {
+	vec2 cell_base = vec2(cell) / NUM_CELLS;
+	float noise_x = rand(vec2(cell));
+    float noise_y = rand(vec2(cell.yx));
+    return cell_base + (0.5 + 1.5 * vec2(noise_x, noise_y)) / NUM_CELLS;
+}
+
+// Performs worley noise by checking all adjacent cells
+// and comparing the distance to their points
+float worley(vec2 coord) {
+    ivec2 cell = ivec2(coord * NUM_CELLS);
+    float dist = 1.0;
+    
+    // Search in the surrounding 5x5 cell block
+    for (int x = 0; x < 5; x++) { 
+        for (int y = 0; y < 5; y++) {
+        	vec2 cell_point = get_cell_point(cell + ivec2(x-2, y-2));
+            dist = min(dist, distance(cell_point, coord));
+
+        }
+    }
+    
+    dist /= length(vec2(1.0 / NUM_CELLS));
+    dist = 1.0 - dist;
+    return dist;
+}
+
+// Adam Mally Worley noise
 vec2 random(vec2 r) {
     return fract(sin(vec2(dot(r, vec2(127.1, 311.7)), dot(r, vec2(269.5, 183.3)))) * 43758.5453);
-
 }
-
-float random2( vec2 p ) {
-    return fract(sin(dot(p, vec2(324.1, 87.7))) * 24589.5453);
-}
-
-float surflet(vec2 P, vec2 gridPoint) {
-    // Compute falloff function by converting linear distance to a polynomial
-    float distX = abs(P.x - gridPoint.x);
-    float distY = abs(P.y - gridPoint.y);
-    float tX = 1 - 6 * pow(distX, 5.f) + 15 * pow(distX, 4.f) - 10 * pow(distX, 3.f);
-    float tY = 1 - 6 * pow(distY, 5.f) + 15 * pow(distY, 4.f) - 10 * pow(distY, 3.f);
-    // Get the random vector for the grid point
-    vec2 gradient = 2.f * random(gridPoint) - vec2(1.f);
-    // Get the vector from the grid point to P
-    vec2 diff = P - gridPoint;
-    // Get the value of our height field by dotting grid->P with our gradient
-    float height = dot(diff, gradient);
-    // Scale our height field (i.e. reduce it) by our polynomial falloff function
-    return height * tX * tY;
-}
-
-float perlinNoise(vec2 uv) {
-        float surfletSum = 0.f;
-        // Iterate over the four integer corners surrounding uv
-        for(int dx = 0; dx <= 1; ++dx) {
-                for(int dy = 0; dy <= 1; ++dy) {
-                        surfletSum += surflet(uv, floor(uv) + vec2(dx, dy));
-                }
-        }
-        return surfletSum;
-}
-
 
 float worleyNoise(vec2 uv) {
     uv *= cos(u_Time * 0.1f);
@@ -64,25 +67,10 @@ float worleyNoise(vec2 uv) {
     return minDist;
 }
 
-void main() {
-    vec2 uv = gl_FragCoord.xy/u_resolution.xy; 
-
-    float x = worleyNoise(uv + vec2(1/u_Dimensions.x, 0)) - worleyNoise(uv - vec2(1/u_Dimensions.x, 0));
-    float y = worleyNoise(uv + vec2(1/u_Dimensions.y, 0)) - worleyNoise(uv - vec2(1/u_Dimensions.y, 0));
-
-    float worleyWarp = worleyNoise2(uv * 0.5f) * 2.f;
-    float worleyWarp2 = worleyNoise(uv * 0.5f + worleyWarp);
-
-    vec3 nor = vec3(x, y, sqrt(1 - x * x - y * y)) * 0.9f;
-
-    float t = abs(sin(u_Time*0.01));
-
-    // Get a random colour from the scene
-    vec3 a = vec3(0.76f, 0.5f, 0.9f);
-    vec3 b = vec3(0.65f, 0.23f, 0.97f);
-    vec3 c = vec3(0.75f, 0.63f, 0.14f);
-
-    vec3 mixColor = mix(a, b, t);
-
-    gl_FragColor *= vec4(mixColor, 1.f);
+void main()
+{
+	vec2 uv = vec2(vTexCoord);
+    uv.y *= iResolution.y / iResolution.x;
+    vec3 colour = texture2D(u_Texture, worley(uv)).rgb;
+	gl_FragColor = vec4(colour);
 }
