@@ -173,6 +173,7 @@ function draw() {
   layer1.shader(chromatic);
 
   chromatic.setUniform("tex0", img);
+  chromatic.setUniform("valence", valence);
 
   layer1.rect(0,0,windowWidth, windowHeight);
 
@@ -188,6 +189,9 @@ function draw() {
   sinewave.setUniform("frequency", freq);
   sinewave.setUniform("amplitude", amp);
 
+  sinewave.setUniform("speechiness", speechiness);
+  sinewave.setUniform("danceability", danceability);
+
   layer2.rect(0,0,windowWidth, windowHeight);
 
   layer3.shader(worleyNoise);
@@ -195,6 +199,7 @@ function draw() {
   worleyNoise.setUniform("resolution", [windowWidth, windowHeight]);
   worleyNoise.setUniform("tex0", layer2);
   worleyNoise.setUniform("time", frameCount * 0.01);
+  worleyNoise.setUniform("speechiness", speechiness);
 
   layer3.rect(0,0,windowWidth, windowHeight);
 
@@ -202,7 +207,7 @@ function draw() {
 
   blurH.setUniform('tex0', layer3);
   blurH.setUniform('texelSize', [1.0/windowWidth, 1.0/windowHeight]);
-  blurH.setUniform('direction', [1.0, 0.5]);
+  blurH.setUniform('direction', [1.0, 0.5 * speechiness]);
 
   pass1.rect(0,0,windowWidth, windowHeight);
 
