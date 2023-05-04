@@ -3,6 +3,7 @@ const clientId = "3b96d98dc3b545cbbbe2a9420ff4f6c9";
 const clientSecret = "568b521ce3f949b7ac4236ad7ff49d5c";
 const container = document.querySelector(".container");
 const searchForm = document.getElementById("search-form");
+// const generatedArt = document.querySelector
 
 async function getAccessToken() {
   const result = await fetch('https://accounts.spotify.com/api/token', {
@@ -47,6 +48,10 @@ async function getAlbumArt(trackName, artist) {
 
 }
 
+var speechiness;
+var danceability;
+var valence;
+
 async function getTrackAudioFeatures(trackName, artist) {
   const token = await getAccessToken(); 
   const trackId = await getTrackId(trackName, artist, token);
@@ -59,6 +64,10 @@ async function getTrackAudioFeatures(trackName, artist) {
   });
 
   const data = await result.json();
+  speechiness = data.speechiness;
+  danceability = data.danceability;
+  valence = data.valence;
+  
   const trackAudioFeatures = {
     danceability: data.danceability,
     valence: data.valence,
@@ -70,6 +79,7 @@ async function getTrackAudioFeatures(trackName, artist) {
 
 var albumArtUrl = '';
 var trackAudioFeatures = {};
+
 
 
 searchForm.addEventListener("submit", async e => {
@@ -85,14 +95,18 @@ searchForm.addEventListener("submit", async e => {
     prevArt.parentNode.removeChild(prevArt);
   }
 
-  var img = document.createElement("img");
-  img.src = albumArtUrl;
-  img.id = "art";
-  document.getElementById("generated-art").appendChild(img);  
-
+  img = loadImage(albumArtUrl);
+  // var img = document.createElement("img");
+  // link = albumArtUrl;
+  // console.log(link);
+  // img.src = albumArtUrl;
+  // img.id = "art";
+  // document.getElementById("generated-art").appendChild(img);  
 });
 
-let img;
+
+
+// let img;
 let myCanvas;
 
 // Create shader
@@ -128,17 +142,16 @@ function preload() {
   bloom = loadShader('base.vert', 'bloom.frag');
 
   // table = loadTable("colours.csv", "csv", "header");
-  console.log(albumArtUrl);
-  img = loadImage("experiments/Experiment_1.png");
+  img = loadImage("https://media-cldnry.s-nbcnews.com/image/upload/t_fit-560w,f_auto,q_auto:eco,dpr_2.0/rockcms/2023-03/new-puppy-tips-cfe42b.jpg"); 
 }
 
 function setup() {
   // createCanvas(windowWidth, windowHeight);
-  myCanvas = createCanvas(200, 300, WEBGL);
+  myCanvas = createCanvas(500, 500, WEBGL);
   myCanvas.parent("generated-art");
-  myCanvas.noStroke();
+  noStroke();
 
-  image(img, -270, -300, windowWidth, windowHeight);
+  image(img, -300, -300, windowWidth, windowHeight);
 
   layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
   layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
@@ -154,6 +167,8 @@ function setup() {
 }
   
 function draw() {
+  img.resize(500, 500); 
+
   // Test greyscale
   layer1.shader(chromatic);
 
@@ -208,7 +223,7 @@ function draw() {
 
   bloomPass.rect(0,0,windowWidth, windowHeight);
 
-  image(bloomPass, -240, -300);
+  image(bloomPass, -300, -300);
 
   shaderTest.setUniform("iResolution", [width, height]);
   shaderTest.setUniform("iFrame", frameCount);
