@@ -215,7 +215,7 @@ function draw() {
 
   blurV.setUniform('tex0', pass1);
   blurV.setUniform('texelSize', [1.0/windowWidth, 1.0/windowHeight]);
-  blurV.setUniform('direction', [3.0, 4.0]);
+  blurV.setUniform('direction', [3.0 * danceability, 4.0]);
 
   pass2.rect(0,0,windowWidth, windowHeight);
 
