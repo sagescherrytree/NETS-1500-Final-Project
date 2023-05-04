@@ -1,0 +1,11 @@
+Project name: The Art of Music
+
+Project description: Our project is a website that takes in a song the user submits, fetches the cover 
+art of the album in which the song appears, and applies a shader to the cover art. The shader
+manipulates the art based on the song's audio features, namely speechiness, valence, and danceability. 
+We implemented the category "Document Search" by using the Spotify API to fetch the cover art and 
+the song's audio features. Joyce was responsible for building the search form and fetching the necessary
+data using the Spotify API. Jackie was responsible for designing and coding multiple shaders for the final
+effect in p5.js. 
+
+Tech stack: HTML, CSS, JavaScript, p5.js, webGL
