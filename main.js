@@ -30,64 +30,6 @@ async function getTrackId(trackName, artist, token) {
   return data.tracks.items[0].id;
 };
 
-let img;
-
-// Create shader
-let worleyNoise;
-let shaderTest;
-let sinewave;
-let greyscale;
-let chromatic;
-
-let blurH;
-let blurV;
-let bloom;
-
-let layer1;
-let layer2;
-let layer3;
-
-let pass1;
-let pass2;
-let bloomPass;
-
-// let shaderLayer;
-
-function preload() {
-  worleyNoise = loadShader('base.vert', 'worley.frag');
-  shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
-  sinewave = loadShader('base.vert', 'sinewave.frag');
-  greyscale = loadShader('base.vert', 'greyscale.frag');
-  chromatic = loadShader('base.vert', 'chromatic.frag');
-
-  blurH = loadShader('base.vert', 'blur.frag');
-  blurV = loadShader('base.vert', 'blur.frag');
-  bloom = loadShader('base.vert', 'bloom.frag');
-
-  // table = loadTable("colours.csv", "csv", "header");
-  img = loadImage("experiments/Experiment_1.png");
-}
-
-function setup() {
-  // createCanvas(windowWidth, windowHeight);
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  noStroke();
-
-  image(img, -270, -300, windowWidth, windowHeight);
-
-  layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
-  layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
-  layer3 = createGraphics(windowWidth, windowHeight, WEBGL);
-
-  pass1 = createGraphics(windowWidth, windowHeight, WEBGL);
-  pass2 = createGraphics(windowWidth, windowHeight, WEBGL);
-  bloomPass = createGraphics(windowWidth, windowHeight, WEBGL);
-
-  pass1.noStroke();
-  pass2.noStroke();
-  bloomPass.noStroke();
-}
-
 async function getAlbumArt(trackName, artist) {
   const token = await getAccessToken(); 
   const trackId = await getTrackId(trackName, artist, token);
@@ -149,6 +91,67 @@ searchForm.addEventListener("submit", async e => {
   document.getElementById("generated-art").appendChild(img);  
 
 });
+
+let img;
+let myCanvas;
+
+// Create shader
+let worleyNoise;
+let shaderTest;
+let sinewave;
+let greyscale;
+let chromatic;
+
+let blurH;
+let blurV;
+let bloom;
+
+let layer1;
+let layer2;
+let layer3;
+
+let pass1;
+let pass2;
+let bloomPass;
+
+// let shaderLayer;
+
+function preload() {
+  worleyNoise = loadShader('base.vert', 'worley.frag');
+  shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
+  sinewave = loadShader('base.vert', 'sinewave.frag');
+  greyscale = loadShader('base.vert', 'greyscale.frag');
+  chromatic = loadShader('base.vert', 'chromatic.frag');
+
+  blurH = loadShader('base.vert', 'blur.frag');
+  blurV = loadShader('base.vert', 'blur.frag');
+  bloom = loadShader('base.vert', 'bloom.frag');
+
+  // table = loadTable("colours.csv", "csv", "header");
+  console.log(albumArtUrl);
+  img = loadImage("experiments/Experiment_1.png");
+}
+
+function setup() {
+  // createCanvas(windowWidth, windowHeight);
+  myCanvas = createCanvas(200, 300, WEBGL);
+  myCanvas.parent("generated-art");
+  myCanvas.noStroke();
+
+  image(img, -270, -300, windowWidth, windowHeight);
+
+  layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
+  layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
+  layer3 = createGraphics(windowWidth, windowHeight, WEBGL);
+
+  pass1 = createGraphics(windowWidth, windowHeight, WEBGL);
+  pass2 = createGraphics(windowWidth, windowHeight, WEBGL);
+  bloomPass = createGraphics(windowWidth, windowHeight, WEBGL);
+
+  pass1.noStroke();
+  pass2.noStroke();
+  bloomPass.noStroke();
+}
   
 function draw() {
   // Test greyscale
