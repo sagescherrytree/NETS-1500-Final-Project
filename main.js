@@ -49,6 +49,7 @@ let worleyNoise;
 let shaderTest;
 let sinewave;
 let greyscale;
+let chromatic;
 
 let blurH;
 let blurV;
@@ -56,6 +57,7 @@ let bloom;
 
 let layer1;
 let layer2;
+let layer3;
 
 let pass1;
 let pass2;
@@ -64,10 +66,11 @@ let bloomPass;
 // let shaderLayer;
 
 function preload() {
-  worleyNoise = loadShader('worley.vert', 'worley.frag');
+  worleyNoise = loadShader('base.vert', 'worley.frag');
   shaderTest = loadShader('shaderTest.vert', 'shaderTest.frag');
   sinewave = loadShader('base.vert', 'sinewave.frag');
   greyscale = loadShader('base.vert', 'greyscale.frag');
+  chromatic = loadShader('base.vert', 'chromatic.frag');
 
   blurH = loadShader('base.vert', 'blur.frag');
   blurV = loadShader('base.vert', 'blur.frag');
@@ -86,6 +89,7 @@ function setup() {
 
   layer1 = createGraphics(windowWidth, windowHeight, WEBGL);
   layer2 = createGraphics(windowWidth, windowHeight, WEBGL);
+  layer3 = createGraphics(windowWidth, windowHeight, WEBGL);
 
   pass1 = createGraphics(windowWidth, windowHeight, WEBGL);
   pass2 = createGraphics(windowWidth, windowHeight, WEBGL);
@@ -98,9 +102,10 @@ function setup() {
   
 function draw() {
   // Test greyscale
-  layer1.shader(greyscale);
+  layer1.shader(chromatic);
 
-  greyscale.setUniform("tex0", img);
+  chromatic.setUniform("tex0", img);
+
   layer1.rect(0,0,windowWidth, windowHeight);
 
   // Test sinewave
@@ -117,19 +122,27 @@ function draw() {
 
   layer2.rect(0,0,windowWidth, windowHeight);
 
+  layer3.shader(worleyNoise);
+
+  worleyNoise.setUniform("resolution", [windowWidth, windowHeight]);
+  worleyNoise.setUniform("tex0", layer2);
+  worleyNoise.setUniform("time", frameCount * 0.01);
+
+  layer3.rect(0,0,windowWidth, windowHeight);
+
   pass1.shader(blurH);
 
-  blurH.setUniform('tex0', layer2);
+  blurH.setUniform('tex0', layer3);
   blurH.setUniform('texelSize', [1.0/windowWidth, 1.0/windowHeight]);
-  blurH.setUniform('direction', [1.0, 0.0]);
+  blurH.setUniform('direction', [1.0, 0.5]);
 
   pass1.rect(0,0,windowWidth, windowHeight);
 
   pass2.shader(blurV);
 
   blurV.setUniform('tex0', pass1);
-  blurV.setUniform('texelSize', [1.0/width, 1.0/height]);
-  blurV.setUniform('direction', [0.0, 1.0]);
+  blurV.setUniform('texelSize', [1.0/windowWidth, 1.0/windowHeight]);
+  blurV.setUniform('direction', [3.0, 4.0]);
 
   pass2.rect(0,0,windowWidth, windowHeight);
 
@@ -150,14 +163,6 @@ function draw() {
 
   // shader(shaderTest);
   // rect(0, 0, windowWidth, windowHeight);
-
-  // Worley noise section
-
-  shader(worleyNoise);
-
-  worleyNoise.setUniform("iResolution", [width, height]);
-  worleyNoise.setUniform("u_Time", frameCount);
-  worleyNoise.setUniform("u_Texture", img);
 
   // rect(0, 0, windowWidth, windowHeight);
 
