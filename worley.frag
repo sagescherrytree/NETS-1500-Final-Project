@@ -5,6 +5,7 @@ varying vec2 vTexCoord;
 uniform vec2 resolution;
 uniform sampler2D tex0;
 uniform float time;
+uniform float speechiness;
 
 // Adam Mally Worley noise from 4600 homework lol.
 vec2 random(vec2 r) {
@@ -33,7 +34,7 @@ void main() {
   // Get the texture coordinate from the uniform input
   vec2 tex = texture2D(tex0, uv).xy;
 
-  float worleyNoise = worley(vec2(uv.x * 0.1, uv.y * 0.32));
+  float worleyNoise = worley(vec2(uv.x * 0.1, uv.y * speechiness));
 
   vec3 colour = texture2D(tex0, vec2(worleyNoise + uv.x, worleyNoise + uv.y)).rgb;
 
