@@ -1,17 +1,10 @@
 
 const clientId = "3b96d98dc3b545cbbbe2a9420ff4f6c9";
 const clientSecret = "568b521ce3f949b7ac4236ad7ff49d5c";
-const searchInput = document.getElementById("search-form");
-
-searchInput.addEventListener("submit", e => {
-  const input = e.target.value;
-  e.preventDefault();
-  console.log(input);
-});
-
+const container = document.querySelector(".container");
+const searchForm = document.getElementById("search-form");
 
 async function getAccessToken() {
-
   const result = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
@@ -21,13 +14,11 @@ async function getAccessToken() {
   });
 
   const data = await result.json();
-  console.log(data.access_token);
   return data.access_token;
 };
 
-async function getTrackId(trackName) {
-  const token = await getAccessToken();  
-  const result = await fetch(`https://api.spotify.com/v1/search?q=${trackName}&type=track&limit=1&offset=0`, {
+async function getTrackId(trackName, artist, token) {
+  const result = await fetch(`https://api.spotify.com/v1/search?q=${trackName}${artist}&type=track&limit=1&offset=0`, {
   method: 'GET',
   headers: { 
     'Content-Type' : "application/json",
@@ -35,12 +26,9 @@ async function getTrackId(trackName) {
   }
 });
 
-  const trackId = await result.json().id;
-  return trackId;
+  const data = await result.json();
+  return data.tracks.items[0].id;
 };
-
-const id = getTrackId("LOSER");
-
 
 let img;
 
@@ -99,6 +87,68 @@ function setup() {
   pass2.noStroke();
   bloomPass.noStroke();
 }
+
+async function getAlbumArt(trackName, artist) {
+  const token = await getAccessToken(); 
+  const trackId = await getTrackId(trackName, artist, token);
+  
+  const result = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+    method: 'GET',
+    headers: { 
+      'Authorization' : `Bearer ${token}`
+    }
+  });
+
+  const data = await result.json();
+  // console.log(data.album.images[0].url)
+  return data.album.images[0].url;
+
+}
+
+async function getTrackAudioFeatures(trackName, artist) {
+  const token = await getAccessToken(); 
+  const trackId = await getTrackId(trackName, artist, token);
+
+  const result = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
+    method: 'GET',
+    headers: { 
+      'Authorization' : `Bearer ${token}`
+    }
+  });
+
+  const data = await result.json();
+  const trackAudioFeatures = {
+    danceability: data.danceability,
+    valence: data.valence,
+    speechiness: data.speechiness
+  }
+  // console.log(trackAudioFeatures);
+  return trackAudioFeatures;
+}
+
+var albumArtUrl = '';
+var trackAudioFeatures = {};
+
+
+searchForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  let trackName = document.getElementById("track").value;
+  let artist = document.getElementById("artist").value;
+  albumArtUrl = await getAlbumArt(trackName, artist);
+  trackAudioFeatures = await getTrackAudioFeatures(trackName, artist);
+  container.classList.add("slide-left");
+
+  var prevArt = document.getElementById('art');
+  if (prevArt != null) {
+    prevArt.parentNode.removeChild(prevArt);
+  }
+
+  var img = document.createElement("img");
+  img.src = albumArtUrl;
+  img.id = "art";
+  document.getElementById("generated-art").appendChild(img);  
+
+});
   
 function draw() {
   // Test greyscale
